@@ -86,64 +86,63 @@ void loop()
   flameVal = "0";
 
   // GPS
-  while (Serial.available() > 0){
+  while (Serial.available() > 0) {
     gps.encode(Serial.read());
-    if (gps.location.isUpdated()){
+    if (gps.location.isValid()) {
       gpsSensorLat = String(gps.location.lat());
       gpsSensorLang = String(gps.location.lng());
-    }
-  }
 
-  // GYRO
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-  gyroX = String(g.gyro.x);
-  gyroY = String(g.gyro.y);
-  gyroZ = String(g.gyro.z);
+      // GYRO
+      sensors_event_t a, g, temp;
+      mpu.getEvent(&a, &g, &temp);
+      gyroX = String(a.acceleration.x);
+      gyroY = String(a.acceleration.y);
+      gyroZ = String(a.acceleration.z);
 
-  // BATTERY
-  if (!batt25)
-  {
-    battVal = "25";
-  }
-  if (!batt50)
-  {
-    battVal = "50";
-  }
-  if (!batt100)
-  {
-    battVal = "100";
-  }
-
-  // FLAME
-  flameVal = String(analogRead(flameSensor));
-
-  Serial.println(gyroX);
-  Serial.println(gyroY);
-  Serial.println(gyroZ);
-  Serial.println(gpsSensorLat);
-  Serial.println(gpsSensorLang);
-  Serial.println(battVal);
-  Serial.println(flameVal);
-  Serial.println("reseted===================================================");
-
-  // SEND
-  WiFiClient client;
-  HTTPClient http;
-  String serverUrl = serverAddress + "api.php?mode=devset&devgyx=" + gyroX + "&devgyy=" + gyroY + "&devgyz=" + gyroZ + "&devlat=" + gpsSensorLat + "&devlong=" + gpsSensorLang + "&devfire=" + flameVal + "&devbat=" + battVal + "&devid=" + deviceID;
-  if (http.begin(client, serverUrl)) 
-  {
-    int httpCode = http.GET();
-    if (httpCode > 0) {
-      if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-        String payload = http.getString();
-        Serial.println(payload);
+      // BATTERY
+      if (!batt25)
+      {
+        battVal = "25";
       }
+      if (!batt50)
+      {
+        battVal = "50";
+      }
+      if (!batt100)
+      {
+        battVal = "100";
+      }
+
+      // FLAME
+      flameVal = String(analogRead(flameSensor));
+
+      Serial.println(gyroX);
+      Serial.println(gyroY);
+      Serial.println(gyroZ);
+      Serial.println(gpsSensorLat);
+      Serial.println(gpsSensorLang);
+      Serial.println(battVal);
+      Serial.println(flameVal);
+      Serial.println("reseted===================================================");
+
+      // SEND
+      WiFiClient client;
+      HTTPClient http;
+      String serverUrl = serverAddress + "api.php?mode=devset&devgyx=" + gyroX + "&devgyy=" + gyroY + "&devgyz=" + gyroZ + "&devlat=" + gpsSensorLat + "&devlong=" + gpsSensorLang + "&devfire=" + flameVal + "&devbat=" + battVal + "&devid=" + deviceID;
+      if (http.begin(client, serverUrl))
+      {
+        int httpCode = http.GET();
+        if (httpCode > 0) {
+          if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+            String payload = http.getString();
+            Serial.println(payload);
+          }
+        }
+      }
+
+      http.end();
+
+      delay(500);
     }
   }
-
-  http.end();
-
-  //
-  delay(250);
 }
