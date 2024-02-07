@@ -25,6 +25,7 @@ int batt100 = D5;
 int batt50 = D6;
 int batt25 = D7;
 int flameSensor = A0;
+int buzzerPin = XX;
 
 // VAR
 String gyroX = "0";
@@ -34,6 +35,7 @@ String gpsSensorLat = "0";
 String gpsSensorLang = "0";
 String battVal = "25";
 String flameVal = "0";
+bool isFall = false;
 
 
 // START
@@ -67,6 +69,7 @@ void setup(void)
   pinMode(batt100, INPUT_PULLUP);
   pinMode(batt50, INPUT_PULLUP);
   pinMode(batt25, INPUT_PULLUP);
+  pinMode(buzzerPin, OUTPUT);
 
   delay(100);
 }
@@ -84,6 +87,7 @@ void loop()
   gpsSensorLang = "0";
   battVal = "25";
   flameVal = "0";
+  isFall = false;
 
   // GPS
   while (Serial.available() > 0) {
@@ -111,6 +115,32 @@ void loop()
       if (!batt100)
       {
         battVal = "100";
+      }
+
+      // GY
+      if (gyroX.toInt() >= 5 || gyroX.toInt() <= -5)
+      {
+        isFall = true;
+      }
+    
+      if (gyroY.toInt() >= 5 || gyroY.toInt() <= -5)
+      {
+        isFall = true;
+      }
+    
+      if (gyroZ.toInt() >= 15 || gyroZ.toInt() <= 5)
+      {
+        isFall = true;
+      }
+    
+      // BUZZER
+      if (isFall)
+      {
+        digitalWrite(isFall, HIGH);
+      }
+      else
+      {
+        digitalWrite(isFall, LOW);
       }
 
       // FLAME
