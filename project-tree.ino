@@ -136,11 +136,11 @@ void loop()
       // BUZZER
       if (isFall)
       {
-        digitalWrite(isFall, HIGH);
+        digitalWrite(buzzerPin, HIGH);
       }
       else
       {
-        digitalWrite(isFall, LOW);
+        digitalWrite(buzzerPin, LOW);
       }
 
       // FLAME
